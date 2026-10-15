@@ -1,6 +1,4 @@
 # Shell
-author: Avishai Menashe
-email: am303212575@gmail.com
 
 ### Project Structure
 ```text
@@ -16,8 +14,8 @@ src/main/java/shell/
 ```
 
 #### The doc directory
-I'm recording my journey in these files including new things I learn while working on this project.
-It's not formatted as it should be, but it shows my development and some interesting things I found.
+I'm recording my journey in these files including new things I learn while working on this project.  
+It's not formatted as it should be, but it shows my development and some interesting things I found.  
 
 #### Test & Run The Application:
 * cd **project path**
