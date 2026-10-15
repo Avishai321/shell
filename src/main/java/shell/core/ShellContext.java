@@ -2,6 +2,8 @@ package shell.core;
 
 import lombok.Getter;
 import lombok.Setter;
+import shell.commands.Reflection;
+import shell.commands.ShellCommand;
 import shell.config.Config;
 
 import java.nio.file.Path;
@@ -11,18 +13,13 @@ import java.util.Map;
 @Getter
 @Setter
 public class ShellContext {
-    private volatile boolean isRunning;
+    // Can be changed from different threads.
+    private volatile boolean isRunning = true;
 
-    private Path pwd;
+    private Path wd = Config.homeDirectory;
 
-    private final Map<String, String> exportedEnvVar;
-    private final Map<String, String> localEnvVars;
+    private final Map<String, ShellCommand> shellCommands = Reflection.getShellCmds();
 
-    public ShellContext() {
-        this.isRunning = true;
-        this.pwd = Config.homeDirectory;
-
-        this.exportedEnvVar = new HashMap<>(System.getenv());
-        this.localEnvVars = new HashMap<>();
-    }
+    private final Map<String, String> exportedEnvVar = new HashMap<>(System.getenv());
+    private final Map<String, String> localEnvVars = new HashMap<>();
 }

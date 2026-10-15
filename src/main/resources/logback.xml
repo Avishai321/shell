@@ -1,0 +1,13 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- Clean format: prints exactly what you pass to the logger -->
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Defaults to INFO. Overridden with -DlogLevel=DEBUG -->
+    <root level="${logLevel:-INFO}">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

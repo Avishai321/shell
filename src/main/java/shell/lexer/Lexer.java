@@ -3,16 +3,21 @@ package shell.lexer;
 import java.util.ArrayList;
 import java.util.List;
 
+//todo Check how to redirect error stream, I think it's "command 2> path"
+// It seems like 2> in NORMAL mode should be considered as Redirect-Error.
+// There is also 2>> for Append-Redirect-Error
+// Add the relevant token types, and update parser.ast.CmdAstNode loop with the new values.
 public class Lexer {
     public enum TokenType {
-        STRING,
+        // IMPORTANT: ordered from the lowest precedence to the highest.
+        SEND_TO_BACKGROUND,
+        AND,
+        OR,
+        PIPE,
+        REDIRECT_IN,
         REDIRECT_OUT,
         APPEND_REDIRECT_OUT,
-        REDIRECT_IN,
-        PIP,
-        SEND_TO_BACKGROUND,
-        OR,
-        AND
+        STRING
     }
 
     public record Token(TokenType type, String val) {
@@ -20,12 +25,12 @@ public class Lexer {
 
     private enum STATE {
         NORMAL,
-        SINGLE_QUOTE,
         DOUBLE_QUOTE,
+        SINGLE_QUOTE,
         ESCAPE
     }
 
-    public static List<Token> tokenize(String input) {
+    public List<Token> tokenize(String input) {
         List<Token> tokens = new ArrayList<>();
 
         STATE state = STATE.NORMAL;
@@ -46,18 +51,18 @@ public class Lexer {
                             tokens.add(new Token(TokenType.REDIRECT_IN, "<"));
                         }
                         case '|' -> i = processOperator(
-                                input, i,
-                                '|', TokenType.PIP, TokenType.OR,
+                                input, i, '|',
+                                TokenType.PIPE, TokenType.OR,
                                 sb, tokens
                         );
                         case '&' -> i = processOperator(
-                                input, i,
-                                '&', TokenType.SEND_TO_BACKGROUND, TokenType.AND,
+                                input, i, '&',
+                                TokenType.SEND_TO_BACKGROUND, TokenType.AND,
                                 sb, tokens
                         );
                         case '>' -> i = processOperator(
-                                input, i,
-                                '>', TokenType.REDIRECT_OUT, TokenType.APPEND_REDIRECT_OUT,
+                                input, i, '>',
+                                TokenType.REDIRECT_OUT, TokenType.APPEND_REDIRECT_OUT,
                                 sb, tokens
                         );
                         case '"' -> state = STATE.DOUBLE_QUOTE;
