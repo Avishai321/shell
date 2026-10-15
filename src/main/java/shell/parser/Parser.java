@@ -83,25 +83,17 @@ public class Parser {
         List<String> args = new ArrayList<>();
         List<RedirectOp> redirectors = new ArrayList<>();
 
-        while (hasNext() && (peek().type() == STRING || isRedirection(peek()))) {
+        while (hasNext() && (peek().type() == STRING || peek().type().isRedirection())) {
             Token token = consume();
 
             if (token.type() == STRING) {
                 args.add(token.val());
-            } else if (isRedirection(token)) {
+            } else if (token.type().isRedirection()) {
                 Token target = consume();
                 redirectors.add(new RedirectOp(token.type(), target.val()));
             }
         }
 
         return new CmdAstNode(args, redirectors);
-    }
-
-    private boolean isRedirection(Token token) {
-        return token.type() == REDIRECT_IN
-                || token.type() == REDIRECT_OUT
-                || token.type() == APPEND_REDIRECT_OUT
-                || token.type() == REDIRECT_ERR
-                || token.type() == APPEND_REDIRECT_ERR;
     }
 }

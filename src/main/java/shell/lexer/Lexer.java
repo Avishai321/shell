@@ -10,12 +10,22 @@ public class Lexer {
         AND,
         OR,
         PIPE,
+
         REDIRECT_IN,
         REDIRECT_OUT,
         APPEND_REDIRECT_OUT,
         REDIRECT_ERR,
         APPEND_REDIRECT_ERR,
-        STRING
+
+        STRING;
+
+        public boolean isRedirection() {
+            return this == REDIRECT_IN
+                    || this == REDIRECT_OUT
+                    || this == APPEND_REDIRECT_OUT
+                    || this == REDIRECT_ERR
+                    || this == APPEND_REDIRECT_ERR;
+        }
     }
 
     public record Token(TokenType type, String val) {
