@@ -3,10 +3,6 @@ package shell.lexer;
 import java.util.ArrayList;
 import java.util.List;
 
-//todo Check how to redirect error stream, I think it's "command 2> path"
-// It seems like 2> in NORMAL mode should be considered as Redirect-Error.
-// There is also 2>> for Append-Redirect-Error
-// Add the relevant token types, and update parser.ast.CmdAstNode loop with the new values.
 public class Lexer {
     public enum TokenType {
         // IMPORTANT: ordered from the lowest precedence to the highest.
@@ -17,6 +13,8 @@ public class Lexer {
         REDIRECT_IN,
         REDIRECT_OUT,
         APPEND_REDIRECT_OUT,
+        REDIRECT_ERR,
+        APPEND_REDIRECT_ERR,
         STRING
     }
 
@@ -65,6 +63,19 @@ public class Lexer {
                                 TokenType.REDIRECT_OUT, TokenType.APPEND_REDIRECT_OUT,
                                 sb, tokens
                         );
+                        case '2' -> {
+                            if (i + 1 < input.length() && input.charAt(i + 1) == '>') {
+                                if (!sb.isEmpty()) tokens.add(createStringToken(sb));
+
+                                if (i + 2 < input.length() && input.charAt(i + 2) == '>') {
+                                    tokens.add(new Token(TokenType.APPEND_REDIRECT_ERR, "2>>"));
+                                    i += 2;
+                                } else {
+                                    tokens.add(new Token(TokenType.REDIRECT_ERR, "2>"));
+                                    i++;
+                                }
+                            } else sb.append(c);
+                        }
                         case '"' -> state = STATE.DOUBLE_QUOTE;
                         case '\'' -> state = STATE.SINGLE_QUOTE;
                         case '\\' -> {

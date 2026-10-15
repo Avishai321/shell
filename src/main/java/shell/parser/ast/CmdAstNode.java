@@ -9,8 +9,6 @@ import java.io.*;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-import static shell.lexer.Lexer.TokenType.*;
-
 @Slf4j
 public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implements AstNode {
     @Override
@@ -43,25 +41,37 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
         if (inheritOut) pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
         if (inheritErr) pb.redirectError(ProcessBuilder.Redirect.INHERIT);
 
-        // File Redirection Overwrites.
-        // This loop will overwrite the inherit flags if the user
-        // explicitly redirected streams to files.
-        for (RedirectOp op : redirectors) {
-            //todo I've left a todo in the lexer about error redirection.
-            // After I fix it there - this loop must be modified as well.
+        /*
+        File Redirection Overwrites.
+        This loop will overwrite the inherit flags if the user
+        explicitly redirected streams to files.
 
+        When redirecting, there is no need to manually pump a file,
+        ProcessBuilder will handle this natively.
+         */
+        for (RedirectOp op : redirectors) {
             File targetFile = new File(context.getWd().toString(), op.target());
-            if (op.opType() == REDIRECT_IN) {
-                pb.redirectInput(targetFile);
-                // No need to manually pump a file,
-                // ProcessBuilder will handle this natively.
-                inheritIn = true;
-            } else if (op.opType() == REDIRECT_OUT) {
-                pb.redirectOutput(targetFile);
-                inheritOut = true;
-            } else if (op.opType() == APPEND_REDIRECT_OUT) {
-                pb.redirectOutput(ProcessBuilder.Redirect.appendTo(targetFile));
-                inheritOut = true;
+            switch (op.opType()) {
+                case REDIRECT_IN -> {
+                    pb.redirectInput(targetFile);
+                    inheritIn = true;
+                }
+                case REDIRECT_OUT -> {
+                    pb.redirectOutput(targetFile);
+                    inheritOut = true;
+                }
+                case APPEND_REDIRECT_OUT -> {
+                    pb.redirectOutput(ProcessBuilder.Redirect.appendTo(targetFile));
+                    inheritOut = true;
+                }
+                case REDIRECT_ERR -> {
+                    pb.redirectError(targetFile);
+                    inheritErr = true;
+                }
+                case APPEND_REDIRECT_ERR -> {
+                    pb.redirectError(ProcessBuilder.Redirect.appendTo(targetFile));
+                    inheritErr = true;
+                }
             }
         }
 

@@ -100,6 +100,8 @@ public class Parser {
     private boolean isRedirection(Token token) {
         return token.type() == REDIRECT_IN
                 || token.type() == REDIRECT_OUT
-                || token.type() == APPEND_REDIRECT_OUT;
+                || token.type() == APPEND_REDIRECT_OUT
+                || token.type() == REDIRECT_ERR
+                || token.type() == APPEND_REDIRECT_ERR;
     }
 }
