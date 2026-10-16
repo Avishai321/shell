@@ -6,6 +6,7 @@ import shell.core.ShellContext;
 import shell.util.Util;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -50,7 +51,8 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
         ProcessBuilder will handle this natively.
          */
         for (RedirectOp op : redirectors) {
-            File targetFile = new File(context.getWd().toString(), op.target());
+            Path targetPath = context.getWd().resolve(op.target()).normalize();
+            File targetFile = targetPath.toFile();
             switch (op.opType()) {
                 case REDIRECT_IN -> {
                     pb.redirectInput(targetFile);
@@ -101,6 +103,8 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
             return process.waitFor();
 
         } catch (IOException e) {
+            //todo this exception is thrown in more than one case,
+            // it's wrong to decide that it's command not found error without checking first.
             Util.write(err, "shell: command not found: " + args.getFirst(), true);
             return 127;
         } catch (InterruptedException e) {
