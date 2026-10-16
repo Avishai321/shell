@@ -12,6 +12,6 @@ public class PwdCommand implements ShellCommand {
     @Override
     public int execute(List<String> args, InputStream in, OutputStream out, OutputStream err, ShellContext context) {
         //todo Implement pwd flags
-        return Util.write(out, context.getWd().toString(), true);
+        return Util.println(out, context.getWd().toString());
     }
 }

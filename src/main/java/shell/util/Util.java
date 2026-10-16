@@ -48,13 +48,17 @@ public final class Util {
         return osName;
     }
 
-    public static int write(OutputStream out, String msg, boolean newLine) {
+    public static int print(OutputStream out, String msg) {
         try {
-            out.write((msg + (newLine ? "\n" : "")).getBytes());
+            out.write(msg.getBytes());
             return 0;
         } catch (IOException e) {
             return 1;
         }
+    }
+
+    public static int println(OutputStream out, String msg) {
+        return print(out, msg + "\n");
     }
 
     public static int extractErrno(String errorMessage) {

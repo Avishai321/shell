@@ -30,12 +30,12 @@ public class CdCommand implements ShellCommand {
                 : context.getWd().resolve(path).normalize();
 
         if (!Files.exists(target)) {
-            Util.write(err, "cd: no such file or directory: " + target, true);
+            Util.println(err, "cd: no such file or directory: " + target);
             return 1;
         }
 
         if (!Files.isDirectory(target)) {
-            Util.write(err, "cd: not a directory" + target, true);
+            Util.println(err, "cd: not a directory" + target);
             return 1;
         }
 

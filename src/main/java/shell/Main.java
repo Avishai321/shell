@@ -12,7 +12,6 @@ public class Main {
 
         //todo
         // * Add documentation and journey development and thoughts!!!!
-        // * Update Util.write to Util.println & Util.print.
         // * Use Util.writeToOutputStream (change the method name) instead of local writeErr methods.
         // * Update the lexer and parser with the $ char, and learn EXACTLY what it should do.
         // * Create doc/Abstract Syntax Tree (or doc/Parser) file, explaining about the parsing job.

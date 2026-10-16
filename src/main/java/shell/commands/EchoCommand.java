@@ -16,6 +16,6 @@ public class EchoCommand implements ShellCommand {
     @Override
     public int execute(List<String> args, InputStream in, OutputStream out, OutputStream err, ShellContext context) {
         //todo Check what flags echo accepts.
-        return Util.write(out, args.getFirst(), true);
+        return Util.println(out, args.getFirst());
     }
 }

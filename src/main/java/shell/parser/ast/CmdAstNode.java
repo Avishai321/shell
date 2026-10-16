@@ -110,23 +110,23 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
 
             switch (errno) {
                 case 2 -> { // ENOENT
-                    Util.write(err, prefix + "command not found", true);
+                    Util.println(err, prefix + "command not found");
                     return 127;
                 }
                 case 13 -> { // EACCES
-                    Util.write(err, prefix + "Permission denied", true);
+                    Util.println(err, prefix + "Permission denied");
                     return 126;
                 }
                 case 1 -> { // EPERM
-                    Util.write(err, prefix + "Operation not permitted", true);
+                    Util.println(err, prefix + "Operation not permitted");
                     return 126;
                 }
                 case 21 -> { // EISDIR
-                    Util.write(err, prefix + "Is a directory", true);
+                    Util.println(err, prefix + "Is a directory");
                     return 126;
                 }
                 default -> { // -1 or unmapped
-                    Util.write(err, prefix + "execution failed (" + e.getMessage() + ")", true);
+                    Util.println(err, prefix + "execution failed (" + e.getMessage() + ")");
                     return 1;
                 }
             }
@@ -136,7 +136,7 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
             return 130;
         } catch (Exception e) {
             log.error("Unexpected JVM error during execution of: {}", args, e);
-            Util.write(err, "shell: execution failed", true);
+            Util.println(err, "shell: execution failed");
             return 1;
         }
     }
