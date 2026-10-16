@@ -3,7 +3,7 @@ I/O devices are working with uninterpreted streams of 8-bit bytes.
 Input/Output Streams are the base abstract classes representing the binary pipeline.
 Invoking read() on an InputStream, is like taking one 8-bit byte off the wire.
 
-However I need to read characters instead of bytes.
+However, I need to read characters instead of bytes.
 In Java, a char is a 16-bit data type representing a UTF-16 code unit.
 
 Reader and Writer are the abstract classes built for this level of abstraction.
