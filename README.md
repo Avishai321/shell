@@ -1,5 +1,11 @@
 # Shell
 
+##### Supported platforms:
+I'm developing the project in my Linux machine, and some platform-related bugs might appear on Windows/macOS.  
+I'll try to minimize those bugs and test it on Windows as well,
+but trying this project on a non-Linux system is not recommended.
+
+
 ### Project Structure
 ```text
 src/main/java/shell/
