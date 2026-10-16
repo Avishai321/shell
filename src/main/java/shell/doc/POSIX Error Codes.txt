@@ -1,0 +1,83 @@
+The POSIX (Portable Operating System Interface) has a strict protocol for how an OS kernel
+communicates failures to the application running on top of it.
+
+Because the kernel is written in C, it cannot throw object-oriented exceptions with stack traces.
+Instead, it relies on an integer variable named 'errno' (Error Number).
+
+# The errno (more information can be found via 'man errno'):
+When my shell spins a new process, the execution context switches from the shell to the kernel.
+
+the kernel might encounter a physical or logical block (e.g., restricted permissions, non-existent directory),
+and it will be forced to abort the system call.
+
+The protocol dictates the kernel will:
+1. Return a value to the calling process, which could be -1 or a NULL pointer.
+2. Write a specific, positive integer into the errno memory location for that thread.
+
+The application will see the -1, immediately read the errno,
+and map it to a human-readable string to understand why the -1 was returned.
+
+When writing C/C++/Go code, it's super easy to get the error message via strerror() method
+that accepts the errno code.
+
+In Java on the other hand, because it's a 'Write Once, Run Anywhere',
+and Windows handles system errors very differently than POSIX/Linux -
+they intentionally hid the errno memory address from the developers.
+
+Here is what happens when a ProcessBuilder that executes C code is blocked and gets the errno:
+1. The kernel returns -1.
+2. The JVM's C code reads the native errno.
+3. The JVM calls strerror(errno) to get the native OS string.
+4. The JVM packages both the raw number and the translated string into
+    a generic IOException and throws it into my application.
+
+# That means:
+In Java the *only* way to get the POSIX error code is
+to parse the IOException.getMessage() payload for the 'error=x' substring.
+
+
+# Important POSIX error codes I found (in 'man errno'):
+* ENOENT (2) - No such file or directory
+    The kernel traversed into inode tree and reached a dead end.
+
+    Thrown when:
+    - Trying to execute a binary that isn't in the $PATH.
+    - Trying to cd into a directory that doesn't exist.
+    - Redirecting output (>) to a file where the parent directory itself is missing.
+
+* EACCES (13) - Permission denied
+    The file or directory exists, but the filesystem's Access Control List (ACL)
+    or standard UNIX file permissions blocks the current user ID
+    from performing the requested action.
+
+    Thrown when:
+    - Trying to execute a script that lacks the +x bit.
+    - Trying to redirect stdout to a protected file.
+
+* EPREM (1) - Operation not permitted
+    The operation is restricted to a higher privilege level (like root),
+    regardless of the file's permissions (which is EACCES)
+
+    Thrown when:
+    - Trying to change the ownership of a file that the current user do not own.
+    - Sending a SIGKILL signal to a process owned by a different user.
+
+* EINTR (4) - Interrupted system call
+    The kernel was executing a slow, blocking system call,
+    but a POSIX signal (like SIGINT from Ctrl+C) arrived at the process.
+    The kernel aborts the slow system call to handle the signal.
+
+    Thrown when:
+    - The shell's Virtual Threads are pumping data between pipes,
+        if the user hits Ctrl+C, the underlying InputStream.read() will fail.
+        The native system call seeing that read was aborted, returning EINTR.
+        The JVM translates this specifically into an InterruptedIOException.
+
+* EISDIR (21) - Is a directory
+    The kernel was asked to perform an operation that is strictly meant for files,
+    but the provided inode points to a directory.
+
+    Thrown when:
+    - The user types /var (a directory) and hits enter,
+        expecting it to run like a command.
+    - Trying to pipe output into a directory instead of a file.
