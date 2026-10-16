@@ -6,6 +6,10 @@ import shell.core.Shell;
 @Slf4j
 public class Main {
     public static void main(String[] args) {
+        //todo CRITICAL
+        // * redirectors are not working as expected.
+        //      Check for different redirect methods, I saw 1> for stdout redirection, just like '>'.
+
         //todo
         // * Add documentation and journey development and thoughts!!!!
         // * Use Util.writeToOutputStream (change the method name) instead of local writeErr methods.
