@@ -1,8 +1,8 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <!-- Clean format: prints exactly what you pass to the logger -->
-            <pattern>%msg%n</pattern>
+            <!-- day/month/year hour:minute:second logLevel msg -->
+            <pattern>%d{dd/MM/yyyy HH:mm:ss} %-5level %msg%n</pattern>
         </encoder>
     </appender>
 
