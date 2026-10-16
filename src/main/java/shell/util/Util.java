@@ -126,9 +126,16 @@ public final class Util {
 
     public static String getFormattedWd(String wd) {
         // Change the home directory path to "~"
-        return wd.startsWith(Config.homeDirectoryStr)
-                ? wd.replaceFirst(Config.homeDirectoryStr, "~")
-                : wd;
+
+        // IMPORTANT //
+        // String.replaceFirst() doesn't take a literal string, but a regex instead.
+        // It means that using replaceFirst won't work on Windows,
+        // because when the working directory contains backslashes (which it is usually in Windows) -
+        // the backslash will corrupt the next character, and I'll get java.util.regex.PatternSyntaxException
+        if (wd.startsWith(Config.homeDirectoryStr)) {
+            wd = "~" + wd.substring(Config.homeDirectoryStr.length());
+        }
+        return wd;
     }
 
     public static String getBranchName(ShellContext context) {
