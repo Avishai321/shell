@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @UtilityClass
 public final class Util {
@@ -55,14 +57,28 @@ public final class Util {
         }
     }
 
+    public static int extractErrno(String errorMessage) {
+        // See "doc/POSIX Signals.txt" for more information.
+        if (errorMessage == null) return -1;
+
+        // Matches the literal "error=" followed by one or more digits
+        Matcher m = Pattern.compile("error=(\\d+)").matcher(errorMessage);
+        if (m.find()) {
+            return Integer.parseInt(m.group(1));
+        }
+
+        // Unknown or unparseable native error
+        return -1;
+    }
+
     public static String getShellPrompt(int lastExitCode, Duration lastExecTime, ShellContext context) {
         /*
         The Idea:
-        ┌──(userName Config.emoji osName)-[workingDirectory]-[branchName] *Align to right*      lastExecTime  x/v
+        ┌──(userName Config.emoji osName)-[workingDirectory]-[branchName] *Right alignment*   execTime  x/v
         └─$ * Next prompt starts here *
 
         example (The emojis might look broken in IntelliJ or others code editors):
-        ┌──(avishai🐧tuxedo-os)-[~/development/Java/shell]-[main]                                         41ms  
+        ┌──(avishai🐧tuxedo-os)-[~/development/Java/shell]-[main]                                   41ms  
         └─$
          */
         String execTimeStr = getFormattedExecTime(lastExecTime);

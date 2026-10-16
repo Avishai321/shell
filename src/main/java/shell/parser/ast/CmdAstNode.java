@@ -103,14 +103,39 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
             return process.waitFor();
 
         } catch (IOException e) {
-            //todo this exception is thrown in more than one case,
-            // it's wrong to decide that it's command not found error without checking first.
-            Util.write(err, "shell: command not found: " + args.getFirst(), true);
-            return 127;
+            log.error("Native execution failed for command: {}", args, e);
+
+            int errno = Util.extractErrno(e.getMessage());
+            String prefix = "shell: " + args.getFirst() + ": ";
+
+            switch (errno) {
+                case 2 -> { // ENOENT
+                    Util.write(err, prefix + "command not found", true);
+                    return 127;
+                }
+                case 13 -> { // EACCES
+                    Util.write(err, prefix + "Permission denied", true);
+                    return 126;
+                }
+                case 1 -> { // EPERM
+                    Util.write(err, prefix + "Operation not permitted", true);
+                    return 126;
+                }
+                case 21 -> { // EISDIR
+                    Util.write(err, prefix + "Is a directory", true);
+                    return 126;
+                }
+                default -> { // -1 or unmapped
+                    Util.write(err, prefix + "execution failed (" + e.getMessage() + ")", true);
+                    return 1;
+                }
+            }
         } catch (InterruptedException e) {
+            log.error("Virtual thread pumping interrupted for command {}", args, e);
             Thread.currentThread().interrupt();
-            return 1;
+            return 130;
         } catch (Exception e) {
+            log.error("Unexpected JVM error during execution of: {}", args, e);
             Util.write(err, "shell: execution failed", true);
             return 1;
         }
