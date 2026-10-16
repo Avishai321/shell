@@ -21,6 +21,7 @@ public final class Util {
     private static final String BLUE = "\033[94m";
     private static final String RED = "\033[31m";
     private static final String WHITE = "\033[37m";
+    private static final String BRIGHT_WHITE = "\033[97m";
 
     public static String getPrettyOsName() {
         String osName = System.getProperty("os.name");
@@ -99,7 +100,7 @@ public final class Util {
         return String.format("%s┌──(%s%s%s)-[%s%s%s]%s%s\n%s└─%s$ %s",
                 GREEN,
                 BLUE, userHostInfo, GREEN,
-                WHITE, wd, GREEN,
+                BRIGHT_WHITE, wd, GREEN,
                 branchSegment,
                 rightAlignSeq,
                 GREEN,
