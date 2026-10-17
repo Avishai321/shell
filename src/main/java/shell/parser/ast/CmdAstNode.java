@@ -106,27 +106,28 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
             log.error("Native execution failed for command: {}", args, e);
 
             int errno = Util.extractErrno(e.getMessage());
-            String prefix = "shell: " + args.getFirst() + ": ";
+            String cmd = args.getFirst();
 
             switch (errno) {
                 case 2 -> { // ENOENT
-                    Util.println(err, prefix + "command not found");
+                    Util.println(err, "shell: command not found: " + cmd);
                     return 127;
                 }
                 case 13 -> { // EACCES
-                    Util.println(err, prefix + "Permission denied");
+                    Util.println(err, "shell: " + cmd + ": Permission denied");
                     return 126;
                 }
                 case 1 -> { // EPERM
-                    Util.println(err, prefix + "Operation not permitted");
+                    Util.println(err, "shell: Operation not permitted: " + cmd);
                     return 126;
                 }
                 case 21 -> { // EISDIR
-                    Util.println(err, prefix + "Is a directory");
+                    Util.println(err, "shell: " + cmd + " Is a directory");
                     return 126;
                 }
                 default -> { // -1 or unmapped
-                    Util.println(err, prefix + "execution failed (" + e.getMessage() + ")");
+                    //todo Improve message format, this message will get super ugly if not.
+                    Util.println(err, "shell: execution failed: " + e.getMessage());
                     return 1;
                 }
             }
