@@ -17,6 +17,8 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
         log.debug("Executing: {}", args);
 
         // If it's a built-in command -> just execute it from the built-ins map and return.
+        //todo CRITICAL!! I should pass it only after redirecting the streams.
+        // And the ShellCommand.execute() method should be much dumber.
         ShellCommand builtIn = context.getShellCommands().get(args.getFirst());
         if (builtIn != null) {
             return builtIn.execute(
