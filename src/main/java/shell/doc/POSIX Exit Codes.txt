@@ -1,0 +1,36 @@
+The Standard Exit Codes:
+
+* 0 - Success
+    The command executed and completed without any errors.
+
+* 1 - General Error
+    A catch-all for general failures.
+
+    Use when:
+    - A file redirection fails during a pre-flight checks.
+    - An unmapped Java Exception occurs (an internal shell crash).
+    - The OS returns a *generic*, unknown failure.
+
+* 2 - Misuse of Shell Builtins
+    I found that this one is reserved for syntax errors within built-in commands.
+    (e.g., passing an invalid flag to 'cd' or 'exit').
+
+* 126 - Command Invoked Cannot Execute
+    The kernel successfully located the file on the disk, but refused to run it.
+
+    Use when:
+    - EACCES (13) / EPERM (1): The file lacks the executable (+x) permission bit.
+    - EISDIR (21): Trying to execute a directory path instead of a file.
+
+* 127 - Command Not Found
+    The kernel couldn't find the executable.
+
+    Use when:
+    - ENOENT (2): The executable literally does not exist.
+
+* 128 + Signal Number - Fatal Error Signal
+    A process terminated by a POSIX signal.
+    The exit code is 128 + the Signal Number.
+
+    - 130 (128 + 2): The process was killed by SIGINT (Signal 2).
+    - 137 (128 + 9): The process was killed by SIGKILL (Signal 9).
