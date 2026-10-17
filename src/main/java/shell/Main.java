@@ -9,10 +9,13 @@ public class Main {
         //todo CRITICAL
         // * redirectors are not working as expected.
         //      Check for different redirect methods, I saw 1> for stdout redirection, just like '>'.
+        //      Check this again after improving the exception handling.
+        // * Check the command before running it in CmdAstNode, and the file redirects.
+        //      For example: I can get a very specific and clean error messages if the user tries
+        //      a completely valid command but with redirection to a redistricted file path.
 
         //todo
         // * Add documentation and journey development and thoughts!!!!
-        // * Use Util.writeToOutputStream (change the method name) instead of local writeErr methods.
         // * Update the lexer and parser with the $ char, and learn EXACTLY what it should do.
         // * Create doc/Abstract Syntax Tree (or doc/Parser) file, explaining about the parsing job.
         //      Do the same for the Lexer as for now these file has no proper documentation.
