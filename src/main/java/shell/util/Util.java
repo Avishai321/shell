@@ -66,14 +66,13 @@ public final class Util {
         // See "doc/POSIX Signals.txt" for more information.
         if (errorMessage == null) return -1;
 
-        // Matches the literal "error=" followed by one or more digits
-        Matcher m = Pattern.compile("error=(\\d+)").matcher(errorMessage);
+        // Matches "error=" or "error:" or "error: " followed by digits
+        Matcher m = Pattern.compile("error[:=]\\s*(\\d+)").matcher(errorMessage);
         if (m.find()) {
             return Integer.parseInt(m.group(1));
         }
 
-        // Unknown or unparseable native error
-        return -1;
+        return -1; // Unknown or unparseable native error
     }
 
     public static String getShellPrompt(int lastExitCode, Duration lastExecTime, ShellContext context) {
