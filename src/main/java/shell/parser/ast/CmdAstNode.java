@@ -134,7 +134,7 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
             return process.waitFor();
 
         } catch (IOException e) {
-            log.error("Native execution failed for command: {}", args, e);
+            log.debug("Native execution failed for command: {}", args, e);
 
             int errno = Util.extractErrno(e.getMessage());
             String cmd = args.getFirst();
