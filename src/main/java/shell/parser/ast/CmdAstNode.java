@@ -171,6 +171,8 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
                 }
             }
         } catch (InterruptedException e) {
+            //todo I found that it should return 128 + POSIX Exit Code.
+            // example: 130 (128 + 2) for SIGINT (2).
             log.error("Virtual thread pumping interrupted for command {}", args, e);
             Thread.currentThread().interrupt();
             return 130;
