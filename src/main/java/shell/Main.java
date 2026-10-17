@@ -7,12 +7,14 @@ import shell.core.Shell;
 public class Main {
     public static void main(String[] args) {
         //todo CRITICAL
+        // * In CmdAstNode -> I should pass the built in only after redirecting!!!!!!
         // * redirectors are not working as expected.
         //      Check for different redirect methods, I saw 1> for stdout redirection, just like '>'.
         //      Check this again after improving the exception handling.
         // * Check the command before running it in CmdAstNode, and the file redirects.
         //      For example: I can get a very specific and clean error messages if the user tries
         //      a completely valid command but with redirection to a redistricted file path.
+        // * Improve code readability in CmdAstNode
 
         //todo
         // * Add documentation and journey development and thoughts!!!!
@@ -24,6 +26,10 @@ public class Main {
         // * Add log.error() in every catch block.
         // * Reduce the emojis usage so the shell will be rendered in more terminals.
         // * Commands in Windows are never found (Check it again after improving the exception handling).
+        // * Make the ShellCommand accept the command itself in the args to simplify execution.
+        //      Right now, if I have a command with it's args and I want to execute a built-in -
+        //      then I'll have to pass the sublist, it's confusing and feels wrong.
+        // * Implement the Alias/Unalias Command's execute() method.
 
         log.debug("Starting application");
         new Shell().start();
