@@ -6,17 +6,10 @@ import shell.core.Shell;
 @Slf4j
 public class Main {
     public static void main(String[] args) {
-        //todo CRITICAL
-        // * In CmdAstNode -> I should pass the built in only after redirecting!!!!!!
-        // * redirectors are not working as expected.
-        //      Check for different redirect methods, I saw 1> for stdout redirection, just like '>'.
-        //      Check this again after improving the exception handling.
-        // * Check the command before running it in CmdAstNode, and the file redirects.
-        //      For example: I can get a very specific and clean error messages if the user tries
-        //      a completely valid command but with redirection to a redistricted file path.
-        // * Improve code readability in CmdAstNode
+        //TODO: *CRITICAL*
+        // *
 
-        //todo
+        //TODO:
         // * Add documentation and journey development and thoughts!!!!
         // * Add doc for Redirections.txt explaining about the redirectors, because it becomes
         //      complex and an important part of the application.
