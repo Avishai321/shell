@@ -159,8 +159,14 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
                     return 126;
                 }
                 default -> { // -1 or unmapped
-                    //todo Improve message format, this message will get super ugly if not.
-                    Util.println(err, "shell: execution failed: " + e.getMessage());
+                    String rawMsg = e.getMessage();
+                    String cleanOsMsg = "execution failed";
+
+                    if (rawMsg != null && rawMsg.contains(", ")) {
+                        cleanOsMsg = rawMsg.substring(rawMsg.indexOf(", ") + 2);
+                    }
+
+                    Util.println(err, "shell: " + cmd + ": " + cleanOsMsg);
                     return 1;
                 }
             }
