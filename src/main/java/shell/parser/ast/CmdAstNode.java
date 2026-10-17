@@ -53,26 +53,57 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
         for (RedirectOp op : redirectors) {
             Path targetPath = context.getWd().resolve(op.target()).normalize();
             File targetFile = targetPath.toFile();
+            String targetName = op.target();
+
+            //todo Move this logic to a new methods to make the code more readable.
             switch (op.opType()) {
                 case REDIRECT_IN -> {
+                    if (!targetFile.exists()) {
+                        Util.println(err, "shell: " + targetName + ": No such file or directory");
+                        return 1;
+                    }
+                    if (!targetFile.canRead()) {
+                        Util.println(err, "shell: " + targetName + ": Permission denied");
+                        return 1;
+                    }
                     pb.redirectInput(targetFile);
                     inheritIn = true;
                 }
-                case REDIRECT_OUT -> {
-                    pb.redirectOutput(targetFile);
-                    inheritOut = true;
-                }
-                case APPEND_REDIRECT_OUT -> {
-                    pb.redirectOutput(ProcessBuilder.Redirect.appendTo(targetFile));
-                    inheritOut = true;
-                }
-                case REDIRECT_ERR -> {
-                    pb.redirectError(targetFile);
-                    inheritErr = true;
-                }
-                case APPEND_REDIRECT_ERR -> {
-                    pb.redirectError(ProcessBuilder.Redirect.appendTo(targetFile));
-                    inheritErr = true;
+                case REDIRECT_OUT, APPEND_REDIRECT_OUT, REDIRECT_ERR, APPEND_REDIRECT_ERR -> {
+                    if (targetFile.isDirectory()) {
+                        Util.println(err, "shell: " + targetName + ": Is a directory");
+                        return 1;
+                    }
+                    if (targetFile.exists() && !targetFile.canWrite()) {
+                        Util.println(err, "shell: " + targetName + ": Permission denied");
+                        return 1;
+                    }
+                    if (!targetFile.exists()) {
+                        File parent = targetFile.getParentFile();
+                        if (parent != null && (!parent.exists() || !parent.canWrite())) {
+                            Util.println(err, "shell: " + targetName + ": No such file or directory");
+                            return 1;
+                        }
+                    }
+
+                    switch (op.opType()) {
+                        case REDIRECT_OUT -> {
+                            pb.redirectOutput(targetFile);
+                            inheritOut = true;
+                        }
+                        case APPEND_REDIRECT_OUT -> {
+                            pb.redirectError(ProcessBuilder.Redirect.appendTo(targetFile));
+                            inheritOut = true;
+                        }
+                        case REDIRECT_ERR -> {
+                            pb.redirectError(targetFile);
+                            inheritErr = true;
+                        }
+                        case APPEND_REDIRECT_ERR -> {
+                            pb.redirectError(ProcessBuilder.Redirect.appendTo(targetFile));
+                            inheritErr = true;
+                        }
+                    }
                 }
             }
         }
