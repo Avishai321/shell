@@ -92,7 +92,7 @@ public record CmdAstNode(List<String> args, List<RedirectOp> redirectors) implem
                             inheritOut = true;
                         }
                         case APPEND_REDIRECT_OUT -> {
-                            pb.redirectError(ProcessBuilder.Redirect.appendTo(targetFile));
+                            pb.redirectOutput(ProcessBuilder.Redirect.appendTo(targetFile));
                             inheritOut = true;
                         }
                         case REDIRECT_ERR -> {
