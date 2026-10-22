@@ -1,6 +1,6 @@
 # Shell
 
-##### Supported platforms:
+### Supported platforms:
 I'm developing the project in my Linux machine, and some platform-related bugs might appear on Windows/macOS.  
 I'll try to minimize those bugs and test it on Windows as well,
 but trying this project on a non-Linux system is not recommended.
@@ -13,17 +13,18 @@ src/main/java/shell/
     config/    # Config Utility Class.
     core/      # Shell (main entry point) with REPL loop, ShellContext.
     doc/       # TXT files explaining important/complex things.
+    execution/ # Single command redirection handling and execution.
     lexer/     # FSM Lexer, Token records, TokenType enum.
     parser/    # Recursive Descent parser, AstNode interface and node implementations.
     util/      # Util class with useful methods.
     Main.java
 ```
 
-#### The doc directory
+### The doc directory
 I'm recording my journey in these files including new things I learn while working on this project.  
 It's not formatted as it should be, but it shows my development and some interesting things I found.  
 
-#### Test & Run The Application:
+### Test & Run The Application:
 * cd **project path**
 * mvn clean compile
 * mvn exec:java -Dexec.mainClass="shell.Main"
