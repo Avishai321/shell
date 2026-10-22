@@ -7,11 +7,7 @@ import shell.core.Shell;
 public class Main {
     public static void main(String[] args) {
         //TODO: *CRITICAL*
-        // * Append redirect output is not working.
-        // * Redirection is not working at all.
-        //      Probably the new method in the execution package
-        // * While fixing all the redirection problems, it is important to also add support
-        //      For all different redirect methods (e.g., '>', '1>', '2>', ...).
+        // *
 
         //TODO:
         // * Separate the Util class and make it smaller, maybe add a ui or visual package

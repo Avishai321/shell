@@ -83,14 +83,19 @@ public class Parser {
         List<String> args = new ArrayList<>();
         List<RedirectOp> redirectors = new ArrayList<>();
 
-        while (hasNext() && (peek().type() == STRING || peek().type().isRedirection())) {
+        while (hasNext() && peek().type().isCommandToken()) {
             Token token = consume();
 
             if (token.type() == STRING) {
                 args.add(token.val());
             } else if (token.type().isRedirection()) {
+                //TODO I should check here is the next token is a string,
+                // it must be a string in order to work...
+                // I should add some more costume exceptions or something.
                 Token target = consume();
                 redirectors.add(new RedirectOp(token.type(), target.val()));
+            } else if (token.type().isFdMerge()) {
+                redirectors.add(new RedirectOp(token.type(), null));
             }
         }
 

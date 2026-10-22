@@ -6,25 +6,28 @@ import java.util.List;
 public class Lexer {
     public enum TokenType {
         // IMPORTANT: ordered from the lowest precedence to the highest.
-        SEND_TO_BACKGROUND,
-        AND,
-        OR,
-        PIPE,
+        SEND_TO_BACKGROUND, AND, OR, PIPE,
 
-        REDIRECT_IN,
-        REDIRECT_OUT,
-        APPEND_REDIRECT_OUT,
-        REDIRECT_ERR,
-        APPEND_REDIRECT_ERR,
+        REDIRECT_IN, REDIRECT_OUT, APPEND_REDIRECT_OUT,
+        REDIRECT_ERR, APPEND_REDIRECT_ERR,
+        REDIRECT_BOTH, APPEND_REDIRECT_BOTH,
+        FD_MERGE_ERR_TO_OUT, FD_MERGE_OUT_TO_ERR,
 
         STRING;
 
+        public boolean isCommandToken() {
+            return this == STRING || isRedirection() || isFdMerge();
+        }
+
         public boolean isRedirection() {
-            return this == REDIRECT_IN
-                    || this == REDIRECT_OUT
+            return this == REDIRECT_IN || this == REDIRECT_OUT
                     || this == APPEND_REDIRECT_OUT
-                    || this == REDIRECT_ERR
-                    || this == APPEND_REDIRECT_ERR;
+                    || this == REDIRECT_ERR || this == APPEND_REDIRECT_ERR
+                    || this == REDIRECT_BOTH || this == APPEND_REDIRECT_BOTH;
+        }
+
+        public boolean isFdMerge() {
+            return this == FD_MERGE_ERR_TO_OUT || this == FD_MERGE_OUT_TO_ERR;
         }
     }
 
@@ -54,38 +57,39 @@ public class Lexer {
                         case ' ' -> {
                             if (!sb.isEmpty()) tokens.add(createStringToken(sb));
                         }
-                        case '<' -> {
-                            if (!sb.isEmpty()) tokens.add(createStringToken(sb));
-                            tokens.add(new Token(TokenType.REDIRECT_IN, "<"));
-                        }
-                        case '|' -> i = processOperator(
-                                input, i, '|',
-                                TokenType.PIPE, TokenType.OR,
-                                sb, tokens
-                        );
-                        case '&' -> i = processOperator(
-                                input, i, '&',
-                                TokenType.SEND_TO_BACKGROUND, TokenType.AND,
-                                sb, tokens
+                        case '<' -> i = processOperator(
+                                input, i, c, sb, tokens,
+                                "<", TokenType.REDIRECT_IN
                         );
                         case '>' -> i = processOperator(
-                                input, i, '>',
-                                TokenType.REDIRECT_OUT, TokenType.APPEND_REDIRECT_OUT,
-                                sb, tokens
+                                input, i, c, sb, tokens,
+                                ">>", TokenType.APPEND_REDIRECT_OUT,
+                                ">", TokenType.REDIRECT_OUT
                         );
-                        case '2' -> {
-                            if (i + 1 < input.length() && input.charAt(i + 1) == '>') {
-                                if (!sb.isEmpty()) tokens.add(createStringToken(sb));
-
-                                if (i + 2 < input.length() && input.charAt(i + 2) == '>') {
-                                    tokens.add(new Token(TokenType.APPEND_REDIRECT_ERR, "2>>"));
-                                    i += 2;
-                                } else {
-                                    tokens.add(new Token(TokenType.REDIRECT_ERR, "2>"));
-                                    i++;
-                                }
-                            } else sb.append(c);
-                        }
+                        case '|' -> i = processOperator(
+                                input, i, c, sb, tokens,
+                                "||", TokenType.OR,
+                                "|", TokenType.PIPE
+                        );
+                        case '&' -> i = processOperator(
+                                input, i, c, sb, tokens,
+                                "&>>", TokenType.APPEND_REDIRECT_BOTH,
+                                "&>", TokenType.REDIRECT_BOTH,
+                                "&&", TokenType.AND,
+                                "&", TokenType.SEND_TO_BACKGROUND
+                        );
+                        case '1' -> i = processOperator(
+                                input, i, c, sb, tokens,
+                                "1>&2", TokenType.FD_MERGE_OUT_TO_ERR,
+                                "1>>", TokenType.APPEND_REDIRECT_OUT,
+                                "1>", TokenType.REDIRECT_OUT
+                        );
+                        case '2' -> i = processOperator(
+                                input, i, c, sb, tokens,
+                                "2>&1", TokenType.FD_MERGE_ERR_TO_OUT,
+                                "2>>", TokenType.APPEND_REDIRECT_ERR,
+                                "2>", TokenType.REDIRECT_ERR
+                        );
                         case '"' -> state = STATE.DOUBLE_QUOTE;
                         case '\'' -> state = STATE.SINGLE_QUOTE;
                         case '\\' -> {
@@ -126,23 +130,32 @@ public class Lexer {
         return new Token(TokenType.STRING, val);
     }
 
+    /*
+    * Takes a list of objects in this format:
+    *   String: "specific match", TokenType: type target.
+    * The list must have the most specific matches first!.
+    * Returns the index the calling loop should continue from.
+     */
     private static int processOperator(
             String input,
             int index,
-            char opChar,
-            TokenType singleType,
-            TokenType doubleType,
+            char defaultChar,
             StringBuilder sb,
-            List<Token> tokens
+            List<Token> tokens,
+            Object... mappings
     ) {
-        if (!sb.isEmpty()) tokens.add(createStringToken(sb));
+        for (int j = 0; j < mappings.length; j += 2) {
+            String op = (String) mappings[j];
+            TokenType type = (TokenType) mappings[j + 1];
 
-        if (index + 1 < input.length() && input.charAt(index + 1) == opChar) {
-            tokens.add(new Token(doubleType, String.valueOf(opChar) + opChar));
-            return index + 1;
+            if (input.startsWith(op, index)) {
+                if (!sb.isEmpty()) tokens.add(createStringToken(sb));
+                tokens.add(new Token(type, op));
+                return index + op.length() - 1;
+            }
         }
 
-        tokens.add(new Token(singleType, String.valueOf(opChar)));
+        sb.append(defaultChar);
         return index;
     }
 }
