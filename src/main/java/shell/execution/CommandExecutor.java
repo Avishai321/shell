@@ -52,10 +52,10 @@ public class CommandExecutor {
                 in = new FileInputStream(streamState.redirectIn);
             }
             if (streamState.redirectOut != null) {
-                out = new FileOutputStream(streamState.redirectOut);
+                out = new FileOutputStream(streamState.redirectOut, streamState.appendOut);
             }
             if (streamState.redirectErr != null) {
-                err = new FileOutputStream(streamState.redirectErr);
+                err = new FileOutputStream(streamState.redirectErr, streamState.appendErr);
             }
 
             // I pass the locally modified 'in/out/err' streams,
@@ -171,9 +171,9 @@ public class CommandExecutor {
     }
 
     /*
-    * Maps the StreamState into the ProcessBuilder.
-    * Returns a boolean array: [inheritIn, inheritOut, inheritErr]
-    * True means the OS kernel handles the I/O natively (no virtual threads needed).
+     * Maps the StreamState into the ProcessBuilder.
+     * Returns a boolean array: [inheritIn, inheritOut, inheritErr]
+     * True means the OS kernel handles the I/O natively (no virtual threads needed).
      */
     private static boolean[] applyNativeRedirections(ProcessBuilder pb, StreamState state) {
         boolean inheritIn = false;
@@ -194,7 +194,7 @@ public class CommandExecutor {
             pb.redirectOutput(
                     state.appendOut
                             ? ProcessBuilder.Redirect.appendTo(state.redirectOut)
-                            : ProcessBuilder.Redirect.INHERIT
+                            : ProcessBuilder.Redirect.to(state.redirectOut)
             );
             inheritOut = true;
         } else if (state.terminalOut == System.out) {
@@ -207,11 +207,11 @@ public class CommandExecutor {
             pb.redirectError(
                     state.appendErr
                             ? ProcessBuilder.Redirect.appendTo(state.redirectErr)
-                            : ProcessBuilder.Redirect.INHERIT
+                            : ProcessBuilder.Redirect.to(state.redirectErr)
             );
             inheritErr = true;
         } else if (state.terminalErr == System.err) {
-            pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+            pb.redirectError(ProcessBuilder.Redirect.INHERIT);
             inheritErr = true;
         }
 
