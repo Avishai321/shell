@@ -20,9 +20,6 @@ I'm trying to save time by implementing simple commands myself
 'echo' & 'pwd' are real executables, and it means that it will work perfectly
     even without my implementation.
  */
-
-//TODO The args should get the command name itself in the first position.
-// Make sure to update all the implementations and usages with that!.
 public interface ShellCommand {
     int execute(List<String> args,
                 InputStream in,
