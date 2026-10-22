@@ -7,7 +7,9 @@ import shell.core.Shell;
 public class Main {
     public static void main(String[] args) {
         //TODO: *CRITICAL*
-        // *
+        // * Append redirect output is not working.
+        // * Redirection is not working at all.
+        //      Probably the new method in the execution package
 
         //TODO:
         // * Add documentation and journey development and thoughts!!!!
