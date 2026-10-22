@@ -5,10 +5,12 @@ import shell.lexer.Lexer;
 import shell.parser.Parser;
 import shell.parser.ast.AstNode;
 import shell.parser.ast.AstPrinter;
-import shell.util.Util;
+import shell.ui.PromptBuilder;
 import sun.misc.Signal;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
@@ -44,7 +46,7 @@ public class Shell {
                     //todo this should interrupt the repl loop instead.
                     // consider using Jline (update documentation if so.)
                     // Right now, Ctrl+C in the middle of operation will corrupt the next prompt.
-                    System.out.print("\n" + Util.getShellPrompt(1, Duration.ofNanos(0), context));
+                    System.out.print("\n" + PromptBuilder.getShellPrompt(1, Duration.ofNanos(0), context));
                     System.out.flush();
                 }
         );
@@ -55,7 +57,7 @@ public class Shell {
         log.debug("Shell is ready");
 
         while (context.isRunning()) {
-            System.out.print(Util.getShellPrompt(lastExitCode, lastExecTime, context));
+            System.out.print(PromptBuilder.getShellPrompt(lastExitCode, lastExecTime, context));
             try {
                 String input = this.reader.readLine();
 

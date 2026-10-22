@@ -9,6 +9,8 @@ import shell.util.Util;
 import java.io.*;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * The core Execution Engine
@@ -125,7 +127,7 @@ public class CommandExecutor {
         } catch (IOException e) {
             log.debug("Native execution failed for command: {}", args, e);
 
-            int errno = Util.extractErrno(e.getMessage());
+            int errno = extractErrno(e.getMessage());
             String cmd = args.getFirst();
 
             switch (errno) {
@@ -248,5 +250,18 @@ public class CommandExecutor {
             closeable.close();
         } catch (IOException ignore) {
         }
+    }
+
+    private int extractErrno(String errorMessage) {
+        // See "doc/POSIX Signals.txt" for more information.
+        if (errorMessage == null) return -1;
+
+        // Matches "error=" or "error:" or "error: " followed by digits
+        Matcher m = Pattern.compile("error[:=]\\s*(\\d+)").matcher(errorMessage);
+        if (m.find()) {
+            return Integer.parseInt(m.group(1));
+        }
+
+        return -1; // Unknown or unparseable native error
     }
 }

@@ -16,6 +16,7 @@ src/main/java/shell/
     execution/ # Single command redirection handling and execution.
     lexer/     # FSM Lexer, Token records, TokenType enum.
     parser/    # Recursive Descent parser, AstNode interface and node implementations.
+    ui/        # Contains ui formatting and visuals.
     util/      # Util class with useful methods.
     Main.java
 ```
