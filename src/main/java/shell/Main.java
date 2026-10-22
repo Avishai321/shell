@@ -21,9 +21,6 @@ public class Main {
         // * Add log.error() in every catch block.
         // * Reduce the emojis usage so the shell will be rendered in more terminals.
         // * Commands in Windows are never found (Check it again after improving the exception handling).
-        // * Make the ShellCommand accept the command itself in the args to simplify execution.
-        //      Right now, if I have a command with it's args and I want to execute a built-in -
-        //      then I'll have to pass the sublist, it's confusing and feels wrong.
         // * Implement the Alias/Unalias Command's execute() method.
 
         log.debug("Starting application");

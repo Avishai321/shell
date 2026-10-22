@@ -17,12 +17,12 @@ public class CdCommand implements ShellCommand {
         // Right now it treats the first arg as the path and ignores the rest.
 
         // "cd" with no path -> goes to the home directory.
-        if (args.isEmpty()) {
+        if (args.size() == 1) {
             context.setWd(Config.homeDirectory);
             return 0;
         }
 
-        String path = args.getFirst();
+        String path = args.get(1);
 
         // Absolute vs Relative path.
         Path target = path.startsWith("/")

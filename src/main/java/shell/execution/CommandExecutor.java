@@ -61,9 +61,7 @@ public class CommandExecutor {
             // I pass the locally modified 'in/out/err' streams,
             // so the built-in writes to the files.
             return builtIn.execute(
-                    //todo IMPORTANT I'm going to change the builtIn.execute() method to accept the
-                    // args as they are, so I won't have to subList the args.
-                    args.subList(1, args.size()),
+                    args,
                     in, out, err,
                     context
             );
