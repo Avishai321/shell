@@ -16,8 +16,6 @@ public class Main {
         // * Add doc for Redirections.txt explaining about the redirectors, because it becomes
         //      complex and an important part of the application.
         // * Update the lexer and parser with the $ char, and learn EXACTLY what it should do.
-        // * Create doc/Abstract Syntax Tree (or doc/Parser) file, explaining about the parsing job.
-        //      Do the same for the Lexer as for now these file has no proper documentation.
         // * In some places I'm catching more than one Exception throw in the same catch block,
         //      that means that I can print the same error for two different ones.
         // * Add log.error() in every catch block.
