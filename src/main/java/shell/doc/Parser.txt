@@ -1,0 +1,24 @@
+While the Lexer groups characters into Tokens, it doesn't care about the rules of the shell.
+The Lexer will tokenize EVERYTHING even if it makes no sense.
+
+The Parser consumes the linear list of Tokens and enforces shell rules,
+by converting the list into the Abstract Syntax Tree (AST).
+
+The Parser uses a technique called Recursive Descent.
+It evaluates operations from the lowest precedence to the highest.
+Because lower precedence operations are evaluated first, they end up higher in the tree.
+
+The Precedence Hierarchy (Lowest to Highest):
+1. Job Control (& - SEND_TO_BACKGROUND)
+2. Logical Operators (&&, ||)
+3. Pipelines (|)
+4. Commands & Redirections (STRING, >, <, ...)
+
+The Parser outputs the root of the AST.
+Every node implements an execute() method.
+Execution starts at the Root and continue down to the leaves.
+
+For example:
+    A Logical && Node, will implement it's execute() method
+    as executing the left child first, and if it returns exit code == 0 ->
+    it will execute the right child.
