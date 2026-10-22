@@ -10,6 +10,8 @@ public class Main {
         // * Append redirect output is not working.
         // * Redirection is not working at all.
         //      Probably the new method in the execution package
+        // * While fixing all the redirection problems, it is important to also add support
+        //      For all different redirect methods (e.g., '>', '1>', '2>', ...).
 
         //TODO:
         // * Add documentation and journey development and thoughts!!!!
