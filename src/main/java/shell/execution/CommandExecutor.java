@@ -79,12 +79,12 @@ public class CommandExecutor {
             // CRITICAL: Prevent OS file lock leaks.
             // I must strictly close only the streams I manually created for files,
             // and never the System terminal stream.
-            try {
-                if (streamState.redirectIn != null && in != null) in.close();
-                if (streamState.redirectOut != null && out != null) out.close();
-                if (streamState.redirectErr != null && err != null) err.close();
-            } catch (IOException ignore) {
-            }
+
+            // I also doing it in different try blocks to make sure that when
+            // one of them fails - the others will still be closed.
+            if (streamState.redirectIn != null && in != null) closeStream(in);
+            if (streamState.redirectOut != null && out != null) closeStream(out);
+            if (streamState.redirectErr != null && err != null) closeStream(err);
         }
     }
 
@@ -243,5 +243,12 @@ public class CommandExecutor {
                 }
             }
         };
+    }
+
+    private void closeStream(Closeable closeable) {
+        try {
+            closeable.close();
+        } catch (IOException ignore) {
+        }
     }
 }
