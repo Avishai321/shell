@@ -10,8 +10,6 @@ public class Main {
         // *
 
         //TODO:
-        // * Separate the Util class and make it smaller, maybe add a ui or visual package
-        //      to handle formatting and ui shit.
         // * Add documentation and journey development and thoughts!!!!
         // * Add doc for Redirections.txt explaining about the redirectors, because it becomes
         //      complex and an important part of the application.
