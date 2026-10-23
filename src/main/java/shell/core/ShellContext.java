@@ -15,6 +15,7 @@ import java.util.Map;
 public class ShellContext {
     // Can be changed from different threads.
     private volatile boolean isRunning = true;
+    private int shellExitCode = 0;
 
     private Path wd = Config.homeDirectory;
 

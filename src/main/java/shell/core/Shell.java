@@ -61,12 +61,12 @@ public class Shell {
         while (context.isRunning()) {
             System.out.print(PromptBuilder.getShellPrompt(lastExitCode, lastExecTime, context));
             try {
-                String input = this.reader.readLine();
+                String input = reader.readLine();
 
                 if (input.isBlank()) {
                     // It seems that zsh doesn't change the lastExitCode.
                     // So this.lastExitCode = 0; is intentionally not used here.
-                    this.lastExecTime = Duration.ZERO;
+                    lastExecTime = Duration.ZERO;
                     continue;
                 }
 
@@ -77,19 +77,20 @@ public class Shell {
                 log.debug("Abstract Syntax Tree:\n{}", AstPrinter.getTreeStruct(root));
 
                 long startNano = System.nanoTime();
-                this.lastExitCode = root.execute(System.in, System.out, System.err, context);
+                lastExitCode = root.execute(System.in, System.out, System.err, context);
+                context.setShellExitCode(lastExitCode);
                 long endNano = System.nanoTime();
 
-                this.lastExecTime = Duration.ofNanos(endNano - startNano);
+                lastExecTime = Duration.ofNanos(endNano - startNano);
             } catch (ParseException e) {
                 Util.println(System.err, e.getMessage());
-                this.lastExitCode = 2;
-                this.lastExecTime = Duration.ZERO;
+                lastExitCode = 2;
+                lastExecTime = Duration.ZERO;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        System.exit(0);
+        System.exit(context.getShellExitCode());
     }
 }
