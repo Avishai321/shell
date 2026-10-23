@@ -89,7 +89,9 @@ public class Parser {
                 args.add(token.val());
             } else if (token.type().isRedirection()) {
                 if (!hasNext() || peek().type() != STRING) {
-                    throw new ParseException("shell: syntax error near unexpected token 'newline'");
+                    String errorToken = hasNext() ? peek().val() : "newline";
+                    throw new ParseException(
+                            "shell: syntax error near unexpected token '" + errorToken + "'");
                 }
                 Token target = consume();
                 redirectors.add(new RedirectOp(token.type(), target.val()));

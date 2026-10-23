@@ -7,11 +7,6 @@ import shell.core.Shell;
 public class Main {
     public static void main(String[] args) {
         //TODO: *CRITICAL*
-        // * Fix Parser Redirection Crash (ls >):
-        //      The parseCommand() method in Parser calls consume()
-        //      to get a file target without checking hasNext(),
-        //      resulting an IndexOutOfBoundsException.
-        //      It must verify a STRING target exists before consuming.
         // * Fix Parser Pipe Crash (echo test |):
         //      When a pipe lacks a right-hand command,
         //      the parser generates an empty CmdAstNode.
