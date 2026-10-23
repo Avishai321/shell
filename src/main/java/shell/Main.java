@@ -7,9 +7,27 @@ import shell.core.Shell;
 public class Main {
     public static void main(String[] args) {
         //TODO: *CRITICAL*
-        // *
+        // * Fix Parser Redirection Crash (ls >):
+        //      The parseCommand() method in Parser calls consume()
+        //      to get a file target without checking hasNext(),
+        //      resulting an IndexOutOfBoundsException.
+        //      It must verify a STRING target exists before consuming.
+        // * Fix Parser Pipe Crash (echo test |):
+        //      When a pipe lacks a right-hand command,
+        //      the parser generates an empty CmdAstNode.
+        //      This causes CommandExecutor.executeCommand() to throw a
+        //      NoSuchElementException when calling args.getFirst().
+        //      The parser should throw a syntax error if a command lacks arguments.
+        // * Fix RedirectionResolver NPE (2>&1):
+        //      File descriptor merges create a RedirectOp with a null target.
+        //      RedirectionResolver blindly calls context.getWd().resolve(op.target()),
+        //      causing a NullPointerException.
+        //      The resolver must bypass path resolution and file checks for isFdMerge() token types.
 
         //TODO:
+        // * Fix EchoCommand Argument Truncation:
+        //      EchoCommand currently hardcodes args.get(1) instead of iterating through
+        //      args from 1 to the end, joining them with spaces before printing.
         // * Add documentation and journey development and thoughts!!!!
         // * Update the lexer and parser with the $ char, and learn EXACTLY what it should do.
         // * In some places I'm catching more than one Exception throw in the same catch block,
