@@ -10,9 +10,6 @@ public class Main {
         // *
 
         //TODO:
-        // * Fix EchoCommand Argument Truncation:
-        //      EchoCommand currently hardcodes args.get(1) instead of iterating through
-        //      args from 1 to the end, joining them with spaces before printing.
         // * Add documentation and journey development and thoughts!!!!
         // * Update the lexer and parser with the $ char, and learn EXACTLY what it should do.
         // * In some places I'm catching more than one Exception throw in the same catch block,

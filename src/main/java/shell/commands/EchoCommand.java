@@ -16,6 +16,13 @@ public class EchoCommand implements ShellCommand {
     @Override
     public int execute(List<String> args, InputStream in, OutputStream out, OutputStream err, ShellContext context) {
         //todo Check what flags echo accepts.
-        return Util.println(out, args.get(1));
+
+        // If there are no args -> print a new line.
+        if (args.size() == 1) {
+            Util.println(out, "");
+        }
+
+        String output = String.join(" ", args.subList(1, args.size()));
+        return Util.println(out, output);
     }
 }
