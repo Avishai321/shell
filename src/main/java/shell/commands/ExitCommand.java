@@ -14,21 +14,26 @@ public class ExitCommand implements ShellCommand {
         /*
          * Accepts zero or one argument which sets the shell exit code.
          */
+
+        // Defaults to the last executed command's status.
+        int code = context.getShellExitCode();
+
         if (args.size() > 1) {
             try {
-                int code = Integer.parseInt(args.get(1));
+                code = Integer.parseInt(args.get(1));
                 if (args.size() > 2) {
                     Util.println(err, "exit: too many arguments.");
-                    return 1;
+                    return 1; // Fail but does not exit the shell
                 }
-                context.setShellExitCode(code);
             } catch (NumberFormatException e) {
                 Util.println(err, "exit: " + args.get(1) + ": numeric argument required");
                 context.setShellExitCode(255);
 
             }
         }
+
+        context.setShellExitCode(code);
         context.setRunning(false);
-        return 0;
+        return code;
     }
 }
