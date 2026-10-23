@@ -7,12 +7,6 @@ import shell.core.Shell;
 public class Main {
     public static void main(String[] args) {
         //TODO: *CRITICAL*
-        // * Fix Parser Pipe Crash (echo test |):
-        //      When a pipe lacks a right-hand command,
-        //      the parser generates an empty CmdAstNode.
-        //      This causes CommandExecutor.executeCommand() to throw a
-        //      NoSuchElementException when calling args.getFirst().
-        //      The parser should throw a syntax error if a command lacks arguments.
         // * Fix RedirectionResolver NPE (2>&1):
         //      File descriptor merges create a RedirectOp with a null target.
         //      RedirectionResolver blindly calls context.getWd().resolve(op.target()),

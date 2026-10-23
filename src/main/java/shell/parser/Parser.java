@@ -42,6 +42,11 @@ public class Parser {
         return index < tokens.size();
     }
 
+    private String getParseExceptionMsg() {
+        String errorToken = hasNext() ? peek().val() : "newline";
+        return "shell: syntax error near unexpected token '" + errorToken + "'";
+    }
+
     public synchronized AstNode createAst(List<Token> tokens) {
         this.tokens = tokens;
         this.index = 0;
@@ -89,9 +94,7 @@ public class Parser {
                 args.add(token.val());
             } else if (token.type().isRedirection()) {
                 if (!hasNext() || peek().type() != STRING) {
-                    String errorToken = hasNext() ? peek().val() : "newline";
-                    throw new ParseException(
-                            "shell: syntax error near unexpected token '" + errorToken + "'");
+                    throw new ParseException(getParseExceptionMsg());
                 }
                 Token target = consume();
                 redirectors.add(new RedirectOp(token.type(), target.val()));
@@ -100,6 +103,9 @@ public class Parser {
             }
         }
 
+        if (args.isEmpty() && redirectors.isEmpty()) {
+            throw new ParseException(getParseExceptionMsg());
+        }
         return new CmdAstNode(args, redirectors);
     }
 }
