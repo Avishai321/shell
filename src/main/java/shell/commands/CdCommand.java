@@ -13,9 +13,6 @@ import java.util.List;
 public class CdCommand implements ShellCommand {
     @Override
     public int execute(List<String> args, InputStream in, OutputStream out, OutputStream err, ShellContext context) {
-        //todo Check if cd should accept flags
-        // Right now it treats the first arg as the path and ignores the rest.
-
         // "cd" with no path -> goes to the home directory.
         if (args.size() == 1) {
             context.setWd(Config.homeDirectory);
