@@ -7,11 +7,7 @@ import shell.core.Shell;
 public class Main {
     public static void main(String[] args) {
         //TODO: *CRITICAL*
-        // * Fix RedirectionResolver NPE (2>&1):
-        //      File descriptor merges create a RedirectOp with a null target.
-        //      RedirectionResolver blindly calls context.getWd().resolve(op.target()),
-        //      causing a NullPointerException.
-        //      The resolver must bypass path resolution and file checks for isFdMerge() token types.
+        // *
 
         //TODO:
         // * Fix EchoCommand Argument Truncation:

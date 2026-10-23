@@ -10,12 +10,12 @@ import java.nio.file.Path;
 import java.util.List;
 
 /*
-* The "Pre-Flight" Redirection Engine.
-*
-* Native processes and Java Built-ins handle I/O completely differently.
-* I cannot blindly pass redirect operators to them.
-* This class intercepts all operators, validates the filesystem permissions in advance,
-* and populates a unified StreamState so the Executor can route the I/O correctly.
+ * The "Pre-Flight" Redirection Engine.
+ *
+ * Native processes and Java Built-ins handle I/O completely differently.
+ * I cannot blindly pass redirect operators to them.
+ * This class intercepts all operators, validates the filesystem permissions in advance,
+ * and populates a unified StreamState so the Executor can route the I/O correctly.
  */
 @UtilityClass
 public class RedirectionResolver {
@@ -27,6 +27,24 @@ public class RedirectionResolver {
         // Iterate through all redirections.
         // Later operators will overwrite earlier ones.
         for (RedirectOp op : redirectors) {
+            /*
+             * File Descriptor Merges (e.g., 2>&1, 1>&2).
+             * These operations manipulate internal Java/OS stream routing directly
+             * rather than targeting a physical file.
+             * I intercept them early to bypass path resolution and prevent a NullPointerException.
+             */
+            if (op.opType().isFdMerge()) {
+                if (op.opType() == Lexer.TokenType.FD_MERGE_ERR_TO_OUT) {
+                    state.redirectErr = state.redirectOut;
+                    state.appendErr = state.appendOut;
+                } else if (op.opType() == Lexer.TokenType.FD_MERGE_OUT_TO_ERR) {
+                    state.redirectOut = state.redirectErr;
+                    state.appendOut = state.appendErr;
+                }
+                continue; // Skip filesystem validation for FD merges.
+            }
+
+            // Standard File Redirectors.
             Path targetPath = context.getWd().resolve(op.target()).normalize();
             File targetFile = targetPath.toFile();
             String targetName = op.target();
