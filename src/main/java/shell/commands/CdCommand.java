@@ -35,13 +35,15 @@ public class CdCommand implements ShellCommand {
         }
 
         if (!Files.isDirectory(target)) {
-            Util.println(err, "cd: not a directory" + target);
+            Util.println(err, "cd: not a directory: " + target);
             return 1;
         }
 
-        //todo handle permission denied
+        if (!Files.isExecutable(target)) {
+            Util.println(err, "cd: permission denied: " + target);
+            return 1;
+        }
 
-        //todo Is it really safe to set it after the security checks above? or I need more checks?
         context.setWd(target);
         return 0;
     }
