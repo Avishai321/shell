@@ -7,6 +7,8 @@ import shell.core.ShellContext;
 import shell.util.Util;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -27,6 +29,10 @@ public class CommandExecutor {
             StreamState streamState,
             ShellContext context) {
 
+        if (args.isEmpty()) {
+            return executeIsolatedRedirection(streamState);
+        }
+
         String command = args.getFirst();
         ShellCommand builtIn = context.getShellCommands().get(command);
 
@@ -35,6 +41,45 @@ public class CommandExecutor {
         }
 
         return executeNative(args, streamState, context);
+    }
+
+    /*
+     * Handles isolated redirections where no command is provided (e.g., "> file.txt).
+     * POSIX standard dictates that this should simply touch or truncate the target file.
+     * I use File to ensure the file channels are safely opened, modified, and closed
+     * natively by the OS without leaving locks or empty try-with-resources blocs.
+     */
+    private static int executeIsolatedRedirection(StreamState streamState) {
+        try {
+            // Process STDOUT redirection fi specified.
+            if (streamState.redirectOut != null) {
+                Files.write( // Manages the entire file lifecycle natively.
+                        streamState.redirectOut.toPath(),
+                        new byte[0], // Because there is no command producing stdout.
+                        StandardOpenOption.CREATE, // Guarantees the file is created if not exists.
+                        streamState.appendOut // This is what happens if the file exists.
+                                ? StandardOpenOption.APPEND
+                                : StandardOpenOption.TRUNCATE_EXISTING
+                );
+            }
+
+            // Process STDERR redirection if specified
+            if (streamState.redirectErr != null) {
+                Files.write(
+                        streamState.redirectErr.toPath(),
+                        new byte[0],
+                        StandardOpenOption.CREATE,
+                        streamState.appendErr
+                                ? StandardOpenOption.APPEND
+                                : StandardOpenOption.TRUNCATE_EXISTING
+                );
+            }
+
+            return 0;
+        } catch (IOException e) {
+            Util.println(streamState.terminalErr, "shell: " + e.getMessage());
+            return 1;
+        }
     }
 
     private static int executeBuiltIn(
