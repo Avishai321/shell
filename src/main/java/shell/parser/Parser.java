@@ -27,7 +27,6 @@ Tokens with lower precedence should be higher on the tree.
         └── COMMAND: [echo, Failed]
 */
 public class Parser {
-    //todo add documentation
     private List<Token> tokens;
     private int index;
 
@@ -89,9 +88,9 @@ public class Parser {
             if (token.type() == STRING) {
                 args.add(token.val());
             } else if (token.type().isRedirection()) {
-                //TODO I should check here is the next token is a string,
-                // it must be a string in order to work...
-                // I should add some more costume exceptions or something.
+                if (!hasNext() || peek().type() != STRING) {
+                    throw new ParseException("shell: syntax error near unexpected token 'newline'");
+                }
                 Token target = consume();
                 redirectors.add(new RedirectOp(token.type(), target.val()));
             } else if (token.type().isFdMerge()) {

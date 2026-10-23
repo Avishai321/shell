@@ -2,10 +2,12 @@ package shell.core;
 
 import lombok.extern.slf4j.Slf4j;
 import shell.lexer.Lexer;
+import shell.parser.ParseException;
 import shell.parser.Parser;
 import shell.parser.ast.AstNode;
 import shell.parser.ast.AstPrinter;
 import shell.ui.PromptBuilder;
+import shell.util.Util;
 import sun.misc.Signal;
 
 import java.io.BufferedReader;
@@ -79,6 +81,10 @@ public class Shell {
                 long endNano = System.nanoTime();
 
                 this.lastExecTime = Duration.ofNanos(endNano - startNano);
+            } catch (ParseException e) {
+                Util.println(System.err, e.getMessage());
+                this.lastExitCode = 2;
+                this.lastExecTime = Duration.ZERO;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
