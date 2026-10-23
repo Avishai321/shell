@@ -1,0 +1,70 @@
+The redirection engine is responsible for overriding the standard I/O streams
+of a process before it starts running.
+
+The shell recognizes several redirection signs, the Lexer detect them,
+and the parser assign them into RedirectOp objects attached to CmdAstNode.
+A command can have multiple redirectors.
+
+The Symbols:
+* < (REDIRECT_IN): Uses a file as STDIN.
+* > OR 1> (REDIRECT_OUT): Overwrites a file with STDOUT.
+* >> OR 1>> (APPEND_REDIRECT_OUT): Appends STDOUT to a file.
+* 2> (REDIRECT_ERR): Overwrites a file with STDERR.
+* 2>> (APPEND_REDIRECT_ERR): Appends STDERR to a file.
+* &> (REDIRECT_BOTH): Overwrites a file with both STDOUT and STDERR.
+* &>> (APPEND_REDIRECT_BOTH): Appends both STDOUT and STDERR to a file.
+* 2>&1 (FD_MERGE_ERR_TO_OUT): Merges STDERR to STDOUT.
+* 1>&2 (FD_MERGE_OUT_TO_ERR): Merges STDOUT to STDERR.
+
+The Pre-Flight Check (RedirectionResolver):
+Before a command actually executes, the CmdAstNode passes the list of RedirectOp
+to the RedirectionResolver.
+This is a critical security phase.
+
+If I were to blindly pass the redirect ops to the OS via ProcessBuilder
+and the file requires root permissions, the process will fail *after* spawning,
+or even fail silently and corrupt streams.
+
+The RedirectionResolver acts as a dry-run:
+1. Iterates through the redirect ops list in order (later operators overwrites earlier ones).
+2. Resolves the absolute path based on the ShellContext's working directory.
+3. Validates filesystem rules (exists, readable, writable, has permissions...).
+4. If any check fails -> it throws a RedirectionException.
+
+The StreamState:
+If the pre-flight check succeeds, the RedirectionResolver populates a StreamState object.
+By default, StreamState points its inputs and outputs to the shell's current terminal stream.
+
+If a redirection operator is applied, the StreamState stores a reference to the File
+and a boolean flag indicating if it should overwrite or append.
+
+The CommandExecutor:
+Now the CommandExecutor takes over.
+It handles I/O differently depending on the command type:
+
+* Native OS Commands (ProcessBuilder):
+Native commands run in a completely separate OS process.
+I don't read bytes manually; I instruct the kernel to wire the streams.
+The applyNativeRedirections() method translates the StreamState into
+ProcesBuilder.Redirect commands:
+- ProcesBuilder.Redirect.INHERIT: If the stream is untouched.
+    The OS wires the child process directly to the JVM's terminal.
+- ProcessBuilder.Redirect.to(File): For standard >.
+- ProcessBuilder.Redirect.appendTo(File): For >>.
+
+If custom Virtual Threads are used for Pipes (|), the ProcessBuilder uses its
+default pipe mechanism, and my JVM pumps the bytes between the processes concurrently.
+
+* Shell Built-in Commands:
+Built-in commands (like cd, echo, pwd) run *inside* the JVM.
+They do not use ProcessBuilder.
+Instead, the CommandExecutor translates the StreamState's File references
+into actual FileInputStream and FileOutputStream objects.
+These streams are passed directly into the ShellCommand.execute() method.
+
+The finally block (Resource Leaks):
+For built-ins, the CommandExecutor must close the custom streams it opens.
+A critical finally block ensures that if I created a FileOutputStream for a redirection,
+I can .close() on it.
+If I inherited the standard terminal stream, I leave it open, otherwise
+closing it would completely brick the shell's ability to print further output.

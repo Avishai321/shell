@@ -11,12 +11,9 @@ public class Main {
 
         //TODO:
         // * Add documentation and journey development and thoughts!!!!
-        // * Add doc for Redirections.txt explaining about the redirectors, because it becomes
-        //      complex and an important part of the application.
         // * Update the lexer and parser with the $ char, and learn EXACTLY what it should do.
         // * In some places I'm catching more than one Exception throw in the same catch block,
         //      that means that I can print the same error for two different ones.
-        // * Add log.error() in every catch block.
         // * Reduce the emojis usage so the shell will be rendered in more terminals.
         // * Commands in Windows are never found (Check it again after improving the exception handling).
         // * Implement the Alias/Unalias Command's execute() method.
