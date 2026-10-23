@@ -21,7 +21,7 @@ public record PipeAstNode(AstNode left, AstNode right) implements AstNode {
 
             CompletableFuture<Integer> leftFuture = CompletableFuture.supplyAsync(() -> {
                 try {
-                    return left.execute(in, pipOut, err, context);
+                    return left.execute(in, pipOut, err, new ShellContext(context));
                 } finally {
                     try {
                         pipOut.close();
@@ -31,11 +31,11 @@ public record PipeAstNode(AstNode left, AstNode right) implements AstNode {
                 }
             });
 
-            int rightExitCode = right.execute(pipIn, out, err, context);
+            int rightExitCode = right.execute(pipIn, out, err, new ShellContext(context));
             leftFuture.join();
             pipIn.close();
-            return rightExitCode;
 
+            return rightExitCode;
         } catch (Exception e) {
             log.error("Pipeline execution error.", e);
             try {

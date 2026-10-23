@@ -16,7 +16,7 @@ public record BgAstNode(AstNode next) implements AstNode {
         new Thread(() -> next.execute(
                 InputStream.nullInputStream(),
                 out, err,
-                context
+                new ShellContext(context)
         )).start();
         return 0;
     }
