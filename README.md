@@ -8,20 +8,20 @@ but trying this project on a non-Linux system is not recommended.
 
 ### Project Structure
 ```text
+docs/                  # Markdown documentation covering architecture and POSIX standards.
 src/main/java/shell/
-    commands/  # Built-in command implementations.
-    config/    # Config Utility Class.
-    core/      # Shell (main entry point) with REPL loop, ShellContext.
-    doc/       # TXT files explaining important/complex things.
-    execution/ # Single command redirection handling and execution.
-    lexer/     # FSM Lexer, Token records, TokenType enum.
-    parser/    # Recursive Descent parser, AstNode interface and node implementations.
-    ui/        # Contains ui formatting and visuals.
-    util/      # Util class with useful methods.
+    commands/          # Built-in command implementations.
+    config/            # Config Utility Class.
+    core/              # Shell (main entry point) with REPL loop, ShellContext.
+    execution/         # Single command redirection handling and execution.
+    lexer/             # FSM Lexer, Token records, TokenType enum.
+    parser/            # Recursive Descent parser, AstNode interface and node implementations.
+    ui/                # Contains ui formatting and visuals.
+    util/              # Util class with useful methods.
     Main.java
 ```
 
-### The doc directory
+### The docs directory
 I'm recording my journey in these files including new things I learn while working on this project.  
 It's not formatted as it should be, but it shows my development and some interesting things I found.  
 
