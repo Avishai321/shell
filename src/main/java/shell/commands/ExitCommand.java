@@ -27,7 +27,7 @@ public class ExitCommand implements ShellCommand {
                 }
             } catch (NumberFormatException e) {
                 Util.println(err, "exit: " + args.get(1) + ": numeric argument required");
-                context.setShellExitCode(255);
+                code = 255;
 
             }
         }
