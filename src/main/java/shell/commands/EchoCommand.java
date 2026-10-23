@@ -18,6 +18,7 @@ public class EchoCommand implements ShellCommand {
         // If there are no args -> print a new line.
         if (args.size() == 1) {
             Util.println(out, "");
+            return 0;
         }
 
         if (args.get(1).equals("-n")) {
