@@ -8,13 +8,14 @@ import java.io.OutputStream;
 public record BgAstNode(AstNode next) implements AstNode {
     @Override
     public int execute(InputStream in, OutputStream out, OutputStream err, ShellContext context) {
-        //todo I've seen in other shells - output from a background job INSIDE the terminal.
-        // So I might shouldn't mess with the err or out streams, check about this.
-        // I'm guessing it's a bug in my shell (zsh) but it worth checking it.
+        /*
+         * POSIX standard dictates that background jobs inherit STDOUT and STDERR
+         * from the parent unless explicitly redirected.
+         * But they must be disconnected from STDIN so they do not steal keyboard input.
+         */
         new Thread(() -> next.execute(
                 InputStream.nullInputStream(),
-                OutputStream.nullOutputStream(),
-                OutputStream.nullOutputStream(),
+                out, err,
                 context
         )).start();
         return 0;
