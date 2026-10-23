@@ -18,33 +18,32 @@ public class PromptBuilder {
     public static String getShellPrompt(int lastExitCode, Duration lastExecTime, ShellContext context) {
         /*
         The Idea:
-        ┌──(userName Config.emoji osName)-[workingDirectory]-[branchName] *Right alignment*   execTime  x/v
+        ┌──(userName@osName)-[workingDirectory]-[branchName]             *Right alignment*   execTime  x/v
         └─$ * Next prompt starts here *
 
-        example (The emojis might look broken in IntelliJ or others code editors):
-        ┌──(avishai🐧tuxedo-os)-[~/development/Java/shell]-[main]                                   41ms  
+        example (The emojis might look broken in IntelliJ or other code editors):
+        ┌──(avishai@tuxedo os)-[~/development/Java/shell]-[main]                                   41ms  
         └─$
          */
         String execTimeStr = getFormattedExecTime(lastExecTime);
         String rightAlignSeq = getRightAlignSeq(lastExitCode, execTimeStr);
 
         String wd = getFormattedWd(context.getWd().toString());
-        String userHostInfo = Config.userName + Config.emoji + Config.osName;
+        String userHostInfo = BLUE + Config.userName + BRIGHT_WHITE + "@" + BLUE + Config.osName;
 
         String branchName = getBranchName(context);
         String branchSegment = branchName != null
                 ? String.format("-[%s\uE0A0%s%s]", WHITE, branchName, GREEN)
                 : "";
 
-        return String.format("%s┌──(%s%s%s)-[%s%s%s]%s%s\n%s└─%s$ %s",
-                GREEN,
-                BLUE, userHostInfo, GREEN,
-                BRIGHT_WHITE, wd, GREEN,
-                branchSegment,
-                rightAlignSeq,
-                GREEN,
-                BLUE,
-                RESET);
+        return GREEN + "┌──("
+                + userHostInfo
+                + GREEN + ")-["
+                + BRIGHT_WHITE + wd + GREEN + "]"
+                + branchSegment
+                + GREEN + rightAlignSeq
+                + "\n" + GREEN + "└─" + BLUE + "$"
+                + RESET + " ";
     }
 
     private static String getRightAlignSeq(int lastExitCode, String execTimeStr) {

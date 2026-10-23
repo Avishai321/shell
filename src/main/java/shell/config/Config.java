@@ -12,7 +12,6 @@ public class Config {
     public final Path homeDirectory = Paths.get(System.getProperty("user.home"));
     public final String homeDirectoryStr = homeDirectory.toString();
 
-    public final String emoji = "\uD83D\uDC27";
     public final String userName = System.getProperty("user.name");
     public final String osName = getPrettyOsName();
 
@@ -39,6 +38,6 @@ public class Config {
             }
         }
 
-        return osName;
+        return osName.trim().replace(" ", "-");
     }
 }
