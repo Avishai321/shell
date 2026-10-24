@@ -7,6 +7,14 @@ The ProcessBuilder is way more flexible than normal Runtime.exec()
 as it allows to configure the standard I/O, environment variables,
 and working directories - before handling the configuration over to the OS.
 
+IMPORTANT:
+In Linux, binaries are directly executed, but Windows requires file extensions (e.g., .bat)
+to resolve commands.
+ProcessBuilder doesn't automatically append the extensions,
+and if I won't tell it specifically the extension - it will fail to create the process.
+I found that appending "cmd.exe /c" before the arguments -
+the cmd.exe will auto check the file extension for me.
+
 ## The primary configs methods I found that I'm going to use:
 
 * `ProcessBuilder command(String... command)`

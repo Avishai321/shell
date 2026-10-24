@@ -9,6 +9,7 @@ import shell.util.Util;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -138,10 +139,19 @@ public class CommandExecutor {
             StreamState state,
             ShellContext context) {
 
-        ProcessBuilder pb = new ProcessBuilder()
-                .command(args)
-                .directory(new File(context.getWd().toString()));
+        ProcessBuilder pb = new ProcessBuilder();
+        // In case of modifying the args - I don't want to change the original list.
+        // This is the list which the ProcessBuilder will get as its args.
+        List<String> processArgs = new ArrayList<>(args);
 
+        // See "docs/architecture/execution-engine.md" for more info.
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            processArgs.addFirst("/c");
+            processArgs.addFirst("cmd.exe");
+        }
+
+        pb.command(processArgs);
+        pb.directory(new File(context.getWd().toString()));
         pb.environment().putAll(context.getExportedEnvVar());
 
         // Delegate the complex ProcessBuilder I/O mapping to keep this method clean.
