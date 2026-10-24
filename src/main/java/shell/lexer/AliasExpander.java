@@ -28,7 +28,7 @@ public class AliasExpander {
 
         // True if bypassing a redirection target.
         // Example: in "< file.txt", "file.txt" is a target, not a command.
-        boolean skipNextString = true;
+        boolean skipNextString = false;
 
         for (Token token : tokens) {
             TokenType type = token.type();
