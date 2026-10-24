@@ -12,3 +12,5 @@
 * The only emoji left is the exit code emoji, check the PromptBuilder.
 * Commands in Windows are never found (Check it again after improving the exception handling).
 * Implement the Alias/Unalias Command's execute() method.
+* In Windows - cd could lead to this path: "A:..\..\", "dir" in that directory
+  outputs the dirs and files in the root directory of the drive, in this case A:\
