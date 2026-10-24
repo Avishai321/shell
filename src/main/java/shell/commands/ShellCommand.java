@@ -10,7 +10,7 @@ import java.util.List;
 commands to implement:
 * cd (change directory...)
 * export (environment variables)
-* alias & unalias //todo Create a new map for them in ShellContext
+* alias & unalias
 * pwd (print working directory)
 * echo (print the arguments as they are)
 * exit (exit...)

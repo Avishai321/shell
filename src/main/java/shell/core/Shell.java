@@ -1,7 +1,9 @@
 package shell.core;
 
 import lombok.extern.slf4j.Slf4j;
+import shell.lexer.AliasExpander;
 import shell.lexer.Lexer;
+import shell.lexer.Lexer.Token;
 import shell.parser.ParseException;
 import shell.parser.Parser;
 import shell.parser.ast.AstNode;
@@ -69,10 +71,11 @@ public class Shell {
         }
 
         try {
-            List<Lexer.Token> tokens = lexer.tokenize(input);
-            log.debug("Tokens list: {}", tokens);
+            List<Token> rawTokens = lexer.tokenize(input);
+            List<Token> expandedTokens = AliasExpander.expand(rawTokens, context, lexer);
+            log.debug("Tokens list: {}", expandedTokens);
 
-            AstNode root = parser.createAst(tokens);
+            AstNode root = parser.createAst(expandedTokens);
             log.debug("Abstract Syntax Tree:\n{}", AstPrinter.getTreeStruct(root));
 
             long startNano = System.nanoTime();

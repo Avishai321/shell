@@ -26,8 +26,19 @@ public class Lexer {
                     || this == REDIRECT_BOTH || this == APPEND_REDIRECT_BOTH;
         }
 
+        public boolean isControlOperator() {
+            return this == SEND_TO_BACKGROUND
+                    || this == AND
+                    || this == OR
+                    || this == PIPE;
+        }
+
         public boolean isFdMerge() {
             return this == FD_MERGE_ERR_TO_OUT || this == FD_MERGE_OUT_TO_ERR;
+        }
+
+        public boolean isLiteral() {
+            return this == STRING;
         }
     }
 
@@ -131,10 +142,10 @@ public class Lexer {
     }
 
     /*
-    * Takes a list of objects in this format:
-    *   String: "specific match", TokenType: type target.
-    * The list must have the most specific matches first!.
-    * Returns the index the calling loop should continue from.
+     * Takes a list of objects in this format:
+     *   String: "specific match", TokenType: type target.
+     * The list must have the most specific matches first!.
+     * Returns the index the calling loop should continue from.
      */
     private static int processOperator(
             String input,
