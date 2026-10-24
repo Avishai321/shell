@@ -13,14 +13,12 @@ import java.util.Map;
 @Getter
 @Setter
 public class ShellContext {
-    // Can be changed from different threads.
     private volatile boolean isRunning;
     private volatile int shellExitCode;
 
     private Path wd;
 
     private final Map<String, ShellCommand> shellCommands;
-
     private final Map<String, String> aliases;
 
     private final Map<String, String> exportedEnvVar;
