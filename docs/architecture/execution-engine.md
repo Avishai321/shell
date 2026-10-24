@@ -44,7 +44,6 @@ the cmd.exe will auto check the file extension for me.
 
   After calling `redirectErrorStream(true)`, any configuration made via `redirectError()` is ignored.
   The destination of the merged stream is controlled exclusively by `redirectOutput()`
-  //todo Learn more about this
 
 ---
 
