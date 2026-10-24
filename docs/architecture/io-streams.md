@@ -1,0 +1,48 @@
+# Getting a command
+
+I/O devices are working with uninterpreted streams of 8-bit bytes.
+
+Input/Output Streams are the base abstract classes representing the binary pipeline.
+Invoking `read()` on an InputStream, is like taking one 8-bit byte off the wire.
+
+However, I need to read characters instead of bytes.
+In Java, a char is a 16-bit data type representing a UTF-16 code unit.
+
+Reader and Writer are the abstract classes built for this level of abstraction.
+They manipulate 16-bit characters, strings, and textual semantics.
+
+## The Bridge: Character Encoding
+
+This is how I can get from an 8-bit byte stream to a 16-bit character stream
+through Character Encoding (like UTF-8, ASCII).
+
+When a user types a command into the OS terminal, the press physical keys.
+The terminal emulator translates those keystrokes into a sequence of bytes.
+These bytes are pushed into the std streams of the Java process (System.in)
+
+To move from the raw InputStream to usable text in Java,
+I can take the byte stream and wrap it in an InputStreamReader
+which will act as the decoder.
+
+Here is the flow:
+
+### 1. The Raw Source (Bytes)
+The input stream has methods like raed() which returns a single 8-bit byte).
+* `InputStream rawInput = System.in;` *
+
+### 2. The Bridge (Bytes → Chars)
+This class is the literal bridge between byte streams and character streams.
+It requires the InputStream and Charset.
+* `InputStreamReader decoder = new InputStreamReader(rawInput, StandardCharsets.UTF_8);` *
+
+### 3. The Buffer (Characters → Lines/Strings)
+Even though InputStreamReader safely gives me chars, I can wrap it again in BufferedReader.
+This object maintains an internal char[] array in memory.
+It pulls characters from the InputStreamReader
+and stores them in its array until it detects a newline char.
+Once it sees the newline, it takes the chunk of chars from its array,
+packages them into a single String, and hands it back.
+* `BufferedReader reader = new BufferedReader(decoder);` *
+
+### 4. The action
+`String command = reader.readLine();`
